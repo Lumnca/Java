@@ -253,6 +253,15 @@ public class Start   {
 |函数式接口|参数类型|返回值|抽象方法名|           描述           |其他方法|
 |:-------:|:-----:|:-----:|:------:|:----------------------: |:-----:|
 |Runnable | 无    | void  | run    |作为无参数或返回值的动作运行|   无  |
-
+|Supplier<T> | 无 |   T   | get    |提供一个T类型的值          |  无   |
+|Consumer<T> | T  | void  | accept | 处理一个T类型的值         | addThen|
+|BiConsumer<T,U>|T,U|void | accept | 处理T和U类型的值          | addThen|
+|Function<T,R>|T   | R    |  apply | 处理一个有T类型参数的函数  | compose，andThen，identity|
+|BiFunction<T,U,R>|T,U|R| | apply  |有T和U类型参数的函数       | addThen |
+|UnaryOperator<T> |T  |T  | apply  |类型T上的一元操作符        |compose，andThen，identity|
+|BinaryOperator<T>|T,T|T  |apply   |类型T上的二元操作符        | compose，andThen，identity|
+|Predicate<T>|T|boolean   |test    |布尔值函数                |and，or，negate，isEqual |
+|BiPredicate<T，U>|T，U|boolean  |test|有两个参数的布尔值函数   |and，or，negate|
+ 
 
 
