@@ -263,5 +263,7 @@ public class Start   {
 |Predicate<T>|T|boolean   |test    |布尔值函数                |and，or，negate，isEqual |
 |BiPredicate<T，U>|T，U|boolean  |test|有两个参数的布尔值函数   |and，or，negate|
  
+ 
+ 对于上面的接口直接使用即可，不需要多的声明，可以直接声明类型使用
 
 
