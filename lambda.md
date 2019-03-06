@@ -12,6 +12,8 @@
 
 :arrow_double_down:<a href="#a4">常用的接口</a>
 
+:arrow_double_down:<a href="#a5">内部类</a>
+
 <p id="a1"><p>
   
 ### :trophy:lambda简介与语法 ###
@@ -86,7 +88,7 @@ public class Start  implements Say {   //继承接口
         Say StudentSay = (s)->{     //lambda引用方法
             System.out.println(s);
         };
-        StudentSay.Say("Hello World");
+        StudentSay.Say("Hello World");    //接口方法调用
     }
     @Override                  //重写接口
     public  void Say(String s){
@@ -94,6 +96,8 @@ public class Start  implements Say {   //继承接口
     }
 }
 ```
+
+函数接口的使用是声明一个接口类型如上 Say StudentSay ， StudentSay为接口实例，然后再用实例调用方法。
 
 <p id="a2"><p>
   
@@ -321,15 +325,250 @@ public class Start   {
 
 Consumer<T>只有一个T类型的参数，无返回值，我们可以在里面调用方法。
   
-  对于接口还有基本类型的接口，这里就不做展示，上面的接口以及够我们平常使用。
+对于接口还有基本类型的接口，这里就不做展示，上面的接口以及够我们平常使用。
+
+<p id="a5"><p>
+  
+### :trophy:lambda内部类 ###
+
+:arrow_double_up:<a href="#t">返回目录</a>
   
   
+内部类是定义在一个类中的类，使用内部类主要是以下特点：
+
+* 内部类方法可以访问该类定义所在的作用域中的数据，包括私有数据。
+
+* 内部类可以对同一个包中的其他类隐藏起来。
+
+* 当想要定义一个回调函数且不想编写大量代码时可以使用匿名内部类比较比便捷。
  
+* 每个内部类都能独立的继承一个接口的实现，所以无论外部类是否已经继承了某个(接口的)实现，对于内部类都没有影响。内部类使得多继承的解决方案变得完整，
+
+* 方便将存在一定逻辑关系的类组织在一起，又可以对外界隐藏。
+
+* 方便编写事件驱动程序
+
+* 方便编写线程代码
+
+  
+#### :taxi:成员内部类 ####
+
+成员内部类可以无条件访问外部类的所有成员属性和成员方法（包括private成员和静态成员）。如下示例:
+
+Students类:
+
+```java
+public class Students   {
+      private  String Name;
+      private  int ID;
+      public static int i = 0;
+      public  Students(String name){
+          Name = name;
+          i+=1;
+      }
+      public String GetName(){
+          return Name;
+      }
+      public class StudentInfor{
+          public void ShowInfor(){
+              System.out.println("学生姓名:"+Name);
+              System.out.println("实例化学生数:"+i);
+          }
+      }
+}
+```
+
+运行测试类：
+
+```java
+public class Start   {
+    public  static void main(String arg[]){
+
+       Students stu1  = new Students("Lumnca");
+       Students stu2  = new Students("Kainny");
+       Students.StudentInfor stuInfor1 = stu1.new StudentInfor();  
+       Students.StudentInfor stuInfor2 = stu2.new StudentInfor();
+       stuInfor1.ShowInfor();
+       stuInfor2.ShowInfor();
+    }
+}
+```
+
+可以看出在内部类中，可以访问任意成员与对象，包括私有与静态。
+
+对于内部类需要先声明外部类，然后再由实例化的对象再实例化一个内部类。如上样式。不过要注意的是，当成员内部类拥有和外部类同名的成员变量或者方法时，会发生隐藏现象，即默认情况下访问的是成员内部类的成员。如果要访问外部类的同名成员，需要以下面的形式进行访问：
+
+```java
+外部类.this.成员变量
+外部类.this.成员方法
+```
+
+虽然成员内部类可以无条件地访问外部类的成员，而外部类想访问成员内部类的成员却不是这么随心所欲了。在外部类中如果要访问成员内部类的成员，必须先创建一个成员内部类的对象，再通过指向这个对象的引用来访问：
+
+Students类：
+
+```java
+public class Students   {
+      private  String Name;
+      private  int ID;
+      public static int i = 0;
+      public  Students(String name){
+          Name = name;
+          i+=1;
+      }
+      public String GetName(){
+          return Name;
+      }
+      public void Show(Students Stu){
+          System.out.println(Stu.new StudentInfor().CodeName());       //对象构建
+      }
+      public class StudentInfor{
+          public String CodeName(){
+              return Name +"001";
+          }
+
+          public void ShowInfor(){
+              System.out.println("学生姓名:"+Name);
+              System.out.println("实例化学生数:"+i);
+          }
+      }
+}
+```
+
+
+运行测试类：
+
+```java
+public class Start   {
+    public  static void main(String arg[]){
+
+       Students stu1  = new Students("Lumnca");
+       Students stu2  = new Students("Kainny");
+       stu1.Show(stu1);
+       stu2.Show(stu2);
+    }
+}
+```
+
+
+#### :taxi:匿名内部类 ####
+
+匿名内部类应该是平时我们编写代码时用得最多的，在编写事件监听的代码时使用匿名内部类不但方便，而且使代码更加容易维护。下面这段代码是一段Android事件监听代码：
+
+```java
+scan_bt.setOnClickListener(new OnClickListener() {
+             
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                 
+            }
+        });
+         
+        history_bt.setOnClickListener(new OnClickListener() {
+             
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                 
+            }
+        });
+```
+
+这段代码为两个按钮设置监听器，这里面就使用了匿名内部类。这段代码中的：
+
+```java
+new OnClickListener() {
+             
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                 
+            }
+        }
+```
+
+就是匿名内部类的使用。代码中需要给按钮设置监听器对象，使用匿名内部类能够在实现父类或者接口中的方法情况下同时产生一个相应的对象，但是前提是这个父类或者接口必须先存在才能这样使用。当然像下面这种写法也是可以的，跟上面使用匿名内部类达到效果相同。
+
+```java
+private void setListener()
+{
+    scan_bt.setOnClickListener(new Listener1());       
+    history_bt.setOnClickListener(new Listener2());
+}
  
+class Listener1 implements View.OnClickListener{
+    @Override
+    public void onClick(View v) {
+    // TODO Auto-generated method stub
+             
+    }
+}
  
- 
- 
- 
+class Listener2 implements View.OnClickListener{
+    @Override
+    public void onClick(View v) {
+    // TODO Auto-generated method stub
+             
+    }
+}
+```
+
+这种写法虽然能达到一样的效果，但是既冗长又难以维护，所以一般使用匿名内部类的方法来编写事件监听代码。同样的，匿名内部类也是不能有访问修饰符和static修饰符的。
+
+匿名内部类是唯一一种没有构造器的类。正因为其没有构造器，所以匿名内部类的使用范围非常有限，大部分匿名内部类用于接口回调。匿名内部类在编译的时候由系统自动起名为Outter$1.class。一般来说，匿名内部类用于继承其他类或是实现接口，并不需要增加额外的方法，只是对继承方法的实现或是重写。
+
+
+#### :taxi:静态内部类 ####
+
+静态内部类也是定义在另一个类里面的类，只不过在类的前面多了一个关键字static。静态内部类是不需要依赖于外部类的，这点和类的静态成员属性有点类似，并且它不能使用外部类的非static成员变量或者方法，这点很好理解，因为在没有外部类的对象的情况下，可以创建静态内部类的对象，如果允许访问外部类的非static成员就会产生矛盾，因为外部类的非static成员必须依附于具体的对象。
+
+```java
+public class Students   {
+      private  String Name;
+      private  int ID;
+      public static int i = 0;
+      public  Students(String name,int id){
+          Name = name;
+          ID = id;
+          i+=1;
+      }
+      public String  GetName(){
+          return Name;
+      }
+      public  int GetID(){
+          return  ID;
+      }
+      public static class Infor{
+          public void ShowNumber(){
+              System.out.println("学生人数为 : "+i);
+          }
+    }
+}
+```
+
+测试类：
+
+```java
+public class Start   {
+    public  static void main(String arg[]){
+        Students s1 = new Students("lmc",20170329);
+        Students s2 = new Students("ljk",20160422);
+
+        Students.Infor infor = new Students.Infor();
+        infor.ShowNumber();
+    }
+}
+```
+
+
+
+
+
+
+
+
+
  
  
  
