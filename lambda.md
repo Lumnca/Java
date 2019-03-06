@@ -329,7 +329,7 @@ Consumer<T>只有一个T类型的参数，无返回值，我们可以在里面�
 
 <p id="a5"><p>
   
-### :trophy:lambda内部类 ###
+### :trophy:内部类 ###
 
 :arrow_double_up:<a href="#t">返回目录</a>
   
