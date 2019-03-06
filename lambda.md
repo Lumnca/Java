@@ -1,4 +1,4 @@
-# —————————:fast_forward:lambda表达式与内部类:rewind:————————— #
+# ————:fast_forward:lambda表达式与内部类:rewind:————— #
 
 <p id="t"></p>
 
