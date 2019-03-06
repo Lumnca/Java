@@ -264,6 +264,83 @@ public class Start   {
 |BiPredicate<T，U>|T，U|boolean  |test|有两个参数的布尔值函数   |and，or，negate|
  
  
- 对于上面的接口直接使用即可，不需要多的声明，可以直接声明类型使用
+ 对于上面的接口直接使用即可，不需要多的声明，可以直接声明类型使用，如下：
+ 
+ 使用Function接口声明一个可以返回Students对象的Name属性：
+ 
+ Students类:
+ 
+ ```java
+ public class Students   {
+      private  String Name;
+      private  int ID;
+      public int i = 0;
+      public  Students(String name){
+          Name = name;
+      }
+      public  void Show(){
+          System.out.println("Name:"+Name);
+      }
+      public String GetName(){
+          return Name;
+      }
+}
+ ```
+ 
+运行测试类：
+ 
+```java
+ public class Start   {
+    public  static void main(String arg[]){
+        Function<Students,String> method = (Stu)->{
+            return Stu.GetName();
+        };
+
+        Students stu = new Students("Lumnca");
+        String _name =  method.apply(stu);
+        System.out.println(_name);
+    }
+}
+
+```
+
+可以看出Function接口需要T，R参数，Function<Students,String>即为一个Students的参数，返回值为String，抽象方法为apply()提供一个Students参数即可执行。
+ 
+ 再如：
+ 
+ ```java
+ public class Start   {
+    public  static void main(String arg[]){
+        Consumer<Students> method = (Stu)->{
+            Stu.Show();
+        };
+        method.accept(new Students("Lumnca"));
+    }
+}
+```
+
+Consumer<T>只有一个T类型的参数，无返回值，我们可以在里面调用方法。
+  
+  对于接口还有基本类型的接口，这里就不做展示，上面的接口以及够我们平常使用。
+  
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 
 
