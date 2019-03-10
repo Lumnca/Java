@@ -8,3 +8,5 @@
 :bullettrain_front:	[异常处理](https://github.com/Lumnca/Java/blob/master/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86.md)
 
 :bullettrain_front:[断言](https://github.com/Lumnca/Java/blob/master/%E6%96%AD%E8%A8%80.md)
+
+:bullettrain_front:[泛型](https://github.com/Lumnca/Java/blob/master/%E6%B3%9B%E5%9E%8B.md)
