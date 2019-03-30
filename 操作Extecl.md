@@ -8,6 +8,8 @@
 
 :arrow_double_down:<a href="#a2">创建工作簿</a>
 
+:arrow_double_down:<a href="#a3">单元格读取</a>
+
 <p id="a1"><p>
   
 ### :custard:Apache POI ###
@@ -112,10 +114,6 @@ import org.apache.poi.ss.usermodel.Cell;
     }
 ```
 
-运行打开文件可以看到：
-
-![](https://github.com/Lumnca/Java/blob/master/img/W(ESV%5DFPE%5DWPP0JDJ%60K2(L6.png)
-
 可以在行上使用列直接设置属性,如下创建一个表格信息：
 
 ```java
@@ -147,5 +145,152 @@ import org.apache.poi.ss.usermodel.Cell;
 ```
 
 ![](https://github.com/Lumnca/Java/blob/master/img/a1.png)
+
+**创建一个时间格式的单元格**
+
+```java
+    public  static void main(String arg[])throws IOException
+    {
+        Workbook wb = new HSSFWorkbook(); //定义一个新的工作簿
+        Sheet sheet1 = wb.createSheet("第一页");
+
+        Row row1 = sheet1.createRow(0);
+        Cell cell1 = row1.createCell(0);
+        Cell cell2 = row1.createCell(1);
+
+        cell1.setCellValue(new Date());  //添加日期
+        cell2.setCellValue(Calendar.getInstance());  //日历
+
+        //单元格样式类
+        CellStyle cellStyle = wb.createCellStyle();
+        CreationHelper creationHelper = wb.getCreationHelper();
+        //设定日期格式
+        cellStyle.setDataFormat(creationHelper.createDataFormat().getFormat("yyyy-mm-dd hh:mm:ss"));
+
+        //添加样式
+        cell1.setCellStyle(cellStyle);
+        cell2.setCellStyle(cellStyle);
+
+        FileOutputStream output = new FileOutputStream("Extec.xls"); //创建一个输入流
+        wb.write(output);
+        output.close();
+    }
+```
+
+这样就可以在单元格上显示日期格式，由于单元格初始长度不够，所以需要扩展单元格长度，才能显示其内容，当然也可以设置单元格长度来自适应。
+
+<p id="a3"><p>
+  
+### :custard:单元格读取 ###
+
+:arrow_double_up:<a href="#t">返回目录</a>
+
+前面所说的都是创建一个表，下面介绍如何读取一个表：
+
+首先这是我创建的Extec表的内容：
+
+![](https://github.com/Lumnca/Java/blob/master/img/a2.png)
+
+
+```java
+    public  static void main(String arg[])throws IOException
+    {
+        InputStream in = new FileInputStream("Extec.xls");   //创建一个输入流
+        POIFSFileSystem fs = new POIFSFileSystem(in);        
+
+        HSSFWorkbook wb = new HSSFWorkbook(fs);            //创建一个工作簿
+        HSSFSheet hssf = wb.getSheetAt(0);                  //获取sheet第一页
+
+        if(hssf==null){
+            System.out.println("该文件没有存在");
+        }
+        else{
+        
+          //循环遍历输出
+        
+            for(int rowNum = 0; rowNum <= hssf.getLastRowNum();rowNum++){          //getLastRowNum()获取最后一行行标
+                HSSFRow hssfRow = hssf.getRow(rowNum);               //获取当前行
+                if(hssfRow==null){
+                    continue;
+                }
+                for(int cellNum = 0;cellNum<=hssfRow.getLastCellNum();cellNum++){    //获取列
+                    HSSFCell cell = hssfRow.getCell(cellNum);
+                    if(cell==null){
+                        continue;
+                    }
+                    System.out.print(" "+getValue(cell));  
+                }
+                System.out.println();
+            }
+        }
+
+
+
+    }
+    //类型处理，以相对应的类型输出
+    private  static String getValue(HSSFCell cell){
+        
+        if(cell.getCellType()==HSSFCell.CELL_TYPE_BOOLEAN){
+            return  String.valueOf(cell.getBooleanCellValue());
+        }
+        
+        else if(cell.getCellType()==HSSFCell.CELL_TYPE_NUMERIC){
+            return  String.valueOf(cell.getNumericCellValue());
+        }
+        
+        else {
+            return  String.valueOf(cell.getStringCellValue());
+        }
+    }
+```
+
+点击运行在控制台输出：
+
+```
+ 姓名 学号 年龄
+ 小明 201703.0 19.0
+ 小红 201702.0 18.0
+ 小刚 201801.0 17.0
+```
+
+与表格数据一致，只是类有些不同，
+
+
+上面是作为表格形式输出，下面可以直接作为文本提取输出：
+
+```java
+    public  static void main(String arg[])throws Exception
+    {
+        InputStream in = new FileInputStream("Extec.xls");
+        POIFSFileSystem fs = new POIFSFileSystem(in);
+
+        HSSFWorkbook wb = new HSSFWorkbook(fs);
+
+        //作为文本直接输出
+
+        try {
+            ExcelExtractor exec = new org.apache.poi.hssf.extractor.ExcelExtractor(wb);
+            System.out.println(exec.getText());
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        
+    }
+```
+
+控制台输出：
+
+```
+第一页
+姓名	学号	年龄
+小明	201703	19
+小红	201702	18
+小刚	201801	17
+```
+
+可以看到这样输出会把sheet的界面内容也显示出来。这些做比用循环迭代方便的多，但是这样就不能对单元格内容做处理，这种方式适用于只用于读取文件。
+
+
 
 
