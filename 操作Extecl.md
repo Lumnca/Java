@@ -289,7 +289,22 @@ import org.apache.poi.ss.usermodel.Cell;
 小刚	201801	17
 ```
 
-可以看到这样输出会把sheet的界面内容也显示出来。这些做比用循环迭代方便的多，但是这样就不能对单元格内容做处理，这种方式适用于只用于读取文件。
+可以看到这样输出会把sheet的界面内容也显示出来。可以使用setIncludeSheetNames(false)方法不显示sheet内容。
+
+```java
+        try {
+            ExcelExtractor exec = new org.apache.poi.hssf.extractor.ExcelExtractor(wb);
+            //不显示sheet内容
+            exec.setIncludeSheetNames(false);
+            System.out.println(exec.getText());
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+  ```
+
+
+这些做比用循环迭代方便的多，但是这样就不能对单元格内容做处理，这种方式适用于只用于读取文件。
 
 
 
