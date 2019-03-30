@@ -308,10 +308,208 @@ import org.apache.poi.ss.usermodel.Cell;
 
 这些做比用循环迭代方便的多，但是这样就不能对单元格内容做处理，这种方式适用于只用于读取文件。
 
-<p id="a1"><p>
+**重写**
+
+因为表可以读取，那么就可以进行重写例子：
+
+下面是修改原有数据的：
+
+```java
+
+    public  static void main(String arg[])throws Exception
+    {
+        InputStream out = new FileInputStream("Extec.xls"); 
+        POIFSFileSystem psf = new POIFSFileSystem(out);       //写入系统
+
+        Workbook wb = new HSSFWorkbook(psf); //定义一个新的工作簿
+        Sheet sheet1 = wb.getSheetAt(0);
+
+        Row row = sheet1.getRow(0);  //获取行
+        Cell cell = row.getCell(0);  //获取列
+
+        cell.setCellValue("重写数据");
+        
+        FileOutputStream output = new FileOutputStream("Extec.xls");
+        wb.write(output);
+        output.close();
+    }
+```
+
+<p id="a4"><p>
   
-### :custard:Apache POI ###
+### :custard:单元格样式 ###
 
 :arrow_double_up:<a href="#t">返回目录</a>
 
+同样的可以在java中设置表样式：
 
+```java
+    public  static void main(String arg[])throws Exception
+    {
+        Workbook wb = new HSSFWorkbook();    //定义一个新的工作簿
+        Sheet sheet1 = wb.createSheet("第一页");
+
+        Row row = sheet1.createRow(0);       //获取第一行
+        
+        //方法创建
+        createCell(wb,row,(short)0, HSSFCellStyle.ALIGN_CENTER,HSSFCellStyle.VERTICAL_CENTER ,"Lumnca");
+        createCell(wb,row,(short)1, HSSFCellStyle.ALIGN_LEFT,HSSFCellStyle.VERTICAL_BOTTOM,"Key" );
+        createCell(wb,row,(short)2, HSSFCellStyle.ALIGN_RIGHT,HSSFCellStyle.VERTICAL_TOP ,"Remilly");
+        
+        FileOutputStream output = new FileOutputStream("Extec.xls");
+        wb.write(output);
+        output.close();
+    }
+
+    private  static  void createCell(Workbook wb,Row row,short colum,short hallign,short valign,String text){
+        //获取列
+        Cell cell = row.createCell(colum);
+        //设置文本
+        cell.setCellValue(text);
+        //添加格式
+        CellStyle cellStyle = wb.createCellStyle(); 
+        //设置水平对齐方式
+        cellStyle.setAlignment(hallign); 
+        //设置垂直对齐方式
+        cellStyle.setVerticalAlignment(valign); 
+        //为单元格添加样式
+        cell.setCellStyle(cellStyle);
+    }
+```
+
+设置样式的方法都包含在cellstyle实例对象中，还可以添加边框：
+
+```java
+    public  static void main(String arg[])throws Exception
+    {
+        Workbook wb = new HSSFWorkbook(); //定义一个新的工作簿
+        Sheet sheet1 = wb.createSheet("第一页");
+
+        Row row = sheet1.createRow(0);         //获取第一行
+        Cell cell = row.createCell(0);         //获取第一行的第一列
+
+        CellStyle cellStyle = wb.createCellStyle();
+        
+        //添加下边框
+        cellStyle.setBorderBottom(CellStyle.BORDER_THIN);
+        //下边框颜色
+        cellStyle.setBottomBorderColor(IndexedColors.GREEN.getIndex());
+        
+        //添加上边框
+        cellStyle.setBorderTop(CellStyle.BORDER_THIN);
+        //上边框颜色
+        cellStyle.setTopBorderColor(IndexedColors.RED.getIndex());
+
+        cell.setCellStyle(cellStyle);
+
+        FileOutputStream output = new FileOutputStream("Extec.xls");
+        wb.write(output);
+        output.close();
+    }
+```
+
+**合并单元格**
+
+```java
+    public  static void main(String arg[])throws Exception
+    {
+        Workbook wb = new HSSFWorkbook(); //定义一个新的工作簿
+        Sheet sheet1 = wb.createSheet("第一页");
+
+        Row row = sheet1.createRow(0);         //获取第一行
+        Row row2 = sheet1.createRow(1);        //获取第二行
+        Cell cell = row.createCell(0);       
+        Cell cell2 = row.createCell(3);
+
+        Cell cell3 = row2.createCell(0);
+        Cell cell4 = row2.createCell(2);
+        Cell cell5 = row2.createCell(4);
+
+        sheet1.addMergedRegion(new CellRangeAddress(0,0,0,2));    //第一个合并块，
+        sheet1.addMergedRegion(new CellRangeAddress(0,0,3,5));
+
+        sheet1.addMergedRegion(new CellRangeAddress(1,2,0,1));
+        sheet1.addMergedRegion(new CellRangeAddress(1,2,2,3));
+        sheet1.addMergedRegion(new CellRangeAddress(1,2,4,5));
+
+
+        cell.setCellValue("合并数据单元块");
+        cell2.setCellValue("合并数据单元块");
+        cell3.setCellValue("合并数据");
+        cell4.setCellValue("合并数据");
+        cell5.setCellValue("合并数据");
+
+        FileOutputStream output = new FileOutputStream("Extec.xls");
+        wb.write(output);
+        output.close();
+    }
+```
+
+`sheet1.addMergedRegion(new CellRangeAddress(0,0,0,2));`方法为添加一个合并单元格，其四个参数按照顺序分别的是：
+
+ * 行起始
+ * 行结束
+ * 列起始
+ * 列结束
+
+每设置一个合并单元格，它的设置文本必须为合并单元格左上角的那个单元框。给这个单元框设置文本就可以应用到整个单元框中。
+
+**字体样式**
+
+可以给表格添加字体形式，如下
+
+```java
+    public  static void main(String arg[])throws Exception
+    {
+        Workbook wb = new HSSFWorkbook(); //定义一个新的工作簿
+        Sheet sheet1 = wb.createSheet("第一页");
+
+        Row row = sheet1.createRow(0);         //获取第一行
+        Cell cell = row.createCell(0);
+
+        cell.setCellValue("文字样式");
+
+
+        Font font = wb.createFont();
+        font.setFontHeightInPoints((short)18);   //字体大小
+        font.setFontName("Courier New");         //字体样式
+        font.setItalic(true);                    //是否斜体
+        font.setStrikeout(true);                 //是否含有下划线
+        font.setBoldweight((short)800);          //字体粗细 100~900
+        font.setColor(IndexedColors.BLUE.getIndex());  //字体颜色
+
+        CellStyle cellStyle = wb.createCellStyle();
+        cellStyle.setFont(font);               //添加字体样式
+        cell.setCellStyle(cellStyle);
+
+
+        FileOutputStream output = new FileOutputStream("Extec.xls");
+        wb.write(output);
+        output.close();
+    }
+```
+
+**字体与换行**
+
+```java
+    public  static void main(String arg[])throws Exception
+    {
+        Workbook wb = new HSSFWorkbook(); //定义一个新的工作簿
+        Sheet sheet1 = wb.createSheet("第一页");
+
+        Row row = sheet1.createRow(0);         //获取第一行
+        Cell cell = row.createCell(0);         //获取第一行的第一列
+        cell.setCellValue("长宽改变\n这是第二行");
+
+        CellStyle cs = wb.createCellStyle();
+        cs.setWrapText(true);       //允许换行
+
+        cell.setCellStyle(cs);
+        row.setHeightInPoints(2*sheet1.getDefaultRowHeightInPoints());  //设置行高
+        sheet1.autoSizeColumn(2);                 //设置单元格宽度
+
+        FileOutputStream output = new FileOutputStream("Extec.xls");
+        wb.write(output);
+        output.close();
+    }
+```
